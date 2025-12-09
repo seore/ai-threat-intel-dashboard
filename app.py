@@ -6,6 +6,22 @@ from src.ip_lookup import full_ip_report
 from src.threat_intel.feeds import fetch_feodo_blocklist
 from src.geo import geocode_ips
 
+def classify_abuse_score(score):
+    if score is None:
+        return "Unknown", "#9ca3af"
+    
+    try:
+        s = int(score)
+    except Exception:
+        return "Unknown", "#9ca3af"
+    
+    if s < 25:
+        return "Low", "#22c55e"
+    elif s < 75:
+        return "Medium", "#eab308"
+    else:
+        return "High", "#ef4444"
+
 # PAGE CONFIG
 st.set_page_config(
     page_title="AI Threat Intelligence Dashboard",
@@ -168,20 +184,97 @@ with tabs[0]:
 
         lookup_clicked = st.button("Lookup", type="primary")
 
-        if lookup_clicked and ip:
-            with st.spinner("Querying threat intel sources..."):
-                report = full_ip_report(ip)
+        if lookup_clicked:
+            if not ip.strip():
+                st.warning("Please enter a valid IP address.")
+            else:
+                with st.spinner("Querying threat intel sources..."):
+                    report = full_ip_report(ip.strip())
 
-            st.markdown(
-                f"""
-                <div class="chip" style="margin-top: 0.3rem; margin-bottom: 0.4rem;">
-                  IP REPORT • {ip}
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
+                st.markdown(
+                    f"""
+                    <div class="chip" style="margin-top: 0.3rem; margin-bottom: 0.4rem;">
+                    IP REPORT • {report.get("ip", ip.strip())}
+                    </div>
+                    """,
+                    unsafe_allow_html=True,
+                )
 
-            st.json(report)
+                # Error handling
+                geo_error = report.get("geo_error")
+                rep_error = report.get("rep_error")
+
+                if geo_error or rep_error:
+                    with st.expander("Warnings & API errors", expanded=True):
+                        if geo_error:
+                            st.warning(f"Geo lookup error: {geo_error}")
+                        if rep_error:
+                            st.warning(f"Reputation lookup error: {rep_error}")
+                
+                # Metric Summary
+                col1, col2, col3 = st.columns(3)
+
+                abuse_score = report.get("abuse_confidence_score")
+                total_reports = report.get("total_reports")
+                country = (report.get("reputation_country") or report.get("country") or "Unknown")
+
+                risk_label, risk_color = classify_abuse_score(abuse_score)
+
+                col1.metric(
+                    "Abuse Score",
+                    value=abuse_score if abuse_score is not None else "–",
+                )
+                col2.metric(
+                    "Total Reports",
+                    value=total_reports if total_reports is not None else "–",
+                )
+                col3.metric("Country", value=country)
+
+                # Risk Chip Data
+                st.markdown(
+                    f""" 
+                    <div class="chip" style="
+                     margin-top: 0.4rem;
+                      margin-bottom: 0.6rem;
+                       border-color: {risk_color};
+                        color: {risk_color}; ">
+                         RISK LEVEL • {risk_label.upper()} </div>
+                           """, 
+                           unsafe_allow_html=True,
+                )
+
+                # Score Details Legend
+                with st.expander("How to interpret the abuse score?"):
+                    st.markdown(
+                        """
+                        The **Abuse Score** comes from AbuseIPDB (0–100):
+
+                        - **0–24** → Low risk (few or no abuse reports)  
+                        - **25–74** → Medium risk (some malicious activity observed)  
+                        - **75–100** → High risk (heavily reported as abusive/malicious)  
+
+                        Combine this with:
+                        - **Total Reports** – how many times the IP was reported  
+                        - **Country / Org / Usage Type** – to understand the context  
+                        """
+                    )
+
+                # Details
+                with st.expander("Details", expanded=True):
+                    st.write(
+                        {
+                            "IP": report.get("ip"),
+                            "City": report.get("city"),
+                            "Region": report.get("region"),
+                            "Org / ASN": report.get("org"),
+                            "ISP": report.get("isp"),
+                            "Usage Type": report.get("usage_type"),
+                            "Domain": report.get("domain"),
+                        }
+                    )
+                
+                with st.expander("Raw threat intel response"):
+                    st.json(report)
 
     with right:
         st.markdown(
