@@ -11,15 +11,15 @@ st.set_page_config(
     layout="wide",
 )
 
-st.title("🛡️ Threat Intelligence Dashboard")
+st.title("Threat Intelligence Dashboard")
 
 st.markdown(
     """
 This dashboard lets you:
 
-- 🔍 Look up IP addresses (geo + reputation)  
-- 🧪 Browse live malware / botnet IP feeds (Feodo Tracker)  
-- 🌍 Visualize malicious activity on a geo heatmap  
+- Look up IP addresses (geo + reputation)  
+- Browse live malware / botnet IP feeds (Feodo Tracker)  
+- Visualize malicious activity on a geo heatmap  
 """
 )
 
