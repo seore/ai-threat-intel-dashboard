@@ -11,14 +11,14 @@ def lookup_geo_ipinfo(ip: str) -> Dict[str, Any]:
         return {"provider": "ipinfo", "error": "IPINFO_TOKEN not set"}
 
     url = f"https://ipinfo.io/{ip}"
-    params = {"token": IPINFO_TOKEN}
+    params: dict[str, str] = {"token": IPINFO_TOKEN}
     try:
         resp = requests.get(url, params=params, timeout=5)
         resp.raise_for_status()
         data = resp.json()
         loc = data.get("loc", "")
         lat, lon = (None, None)
-        if loc and "," in loc:
+        if isinstance(loc, str) and "," in loc:
             lat_str, lon_str = loc.split(",", 1)
             lat, lon = float(lat_str), float(lon_str)
         return {
@@ -40,8 +40,8 @@ def lookup_reputation_abuseipdb(ip: str) -> Dict[str, Any]:
         return {"provider": "abuseipdb", "error": "ABUSEIPDB_KEY not set"}
 
     url = "https://api.abuseipdb.com/api/v2/check"
-    headers = {"Key": ABUSEIPDB_KEY, "Accept": "application/json"}
-    params = {"ipAddress": ip, "maxAgeInDays": 90}
+    headers: dict[str, str] = {"Key": ABUSEIPDB_KEY, "Accept": "application/json"}
+    params: dict[str, str] = {"ipAddress": ip, "maxAgeInDays": "90"}
     try:
         resp = requests.get(url, headers=headers, params=params, timeout=5)
         resp.raise_for_status()
