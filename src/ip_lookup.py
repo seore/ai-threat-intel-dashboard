@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import requests
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 
 from .threat_intel.config import IPINFO_TOKEN, ABUSEIPDB_KEY
 
