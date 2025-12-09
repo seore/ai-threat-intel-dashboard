@@ -30,7 +30,7 @@ Built with Python, Streamlit, Plotly, Docker, and real external APIs (AbuseIPDB 
 ---
 
 ## Live Preview
-https://ai-threat-intel-dashboard.streamlit.app
+https://ai-threat-intel.streamlit.app
 
 ---
 
