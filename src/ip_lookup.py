@@ -3,7 +3,7 @@ from __future__ import annotations
 import requests
 from typing import Dict, Any, Optional
 
-from .config import IPINFO_TOKEN, ABUSEIPDB_KEY
+from .threat_intel.config import IPINFO_TOKEN, ABUSEIPDB_KEY
 
 
 def lookup_geo_ipinfo(ip: str) -> Dict[str, Any]:
