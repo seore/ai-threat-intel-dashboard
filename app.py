@@ -6,6 +6,7 @@ from src.ip_lookup import full_ip_report
 from src.threat_intel.feeds import fetch_feodo_blocklist
 from src.geo import geocode_ips
 
+
 st.set_page_config(
     page_title="Threat Intelligence Dashboard",
     layout="wide",
