@@ -89,7 +89,6 @@ def full_ip_report(ip: str) -> Dict[str, Any]:
             }
         )
 
-
     if "error" in geo:
         report["geo_error"] = geo["error"]
     if "error" in rep:

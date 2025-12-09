@@ -12,12 +12,12 @@ if ENV_PATH.exists():
     print("[config] .env loaded successfully")
 else:
     print(f"[config] WARNING: .env not found at {ENV_PATH}")
-    
-# IP geolocation 
+
+# IP geolocation
 IPINFO_TOKEN = os.getenv("IPINFO_TOKEN")
 ABUSEIPDB_KEY = os.getenv("ABUSEIPDB_KEY")
 
-# Threat feeds 
+# Threat feeds
 FEODO_JSON_URL = "https://feodotracker.abuse.ch/downloads/ipblocklist_aggressive.json"
 
 DATA_DIR = BASE_DIR / "data"

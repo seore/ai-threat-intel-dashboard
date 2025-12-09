@@ -6,14 +6,14 @@ from src.ip_lookup import full_ip_report
 from src.threat_intel.feeds import fetch_feodo_blocklist
 from src.geo import geocode_ips
 
-# PAGE CONFIG 
+# PAGE CONFIG
 st.set_page_config(
     page_title="AI Threat Intelligence Dashboard",
     page_icon="🛰️",
     layout="wide",
 )
 
-# CUSTOM CSS 
+# CUSTOM CSS
 st.markdown(
     """
     <style>
@@ -91,7 +91,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# PAGE HEADER 
+# PAGE HEADER
 st.markdown(
     """
     <div>
@@ -104,7 +104,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# PAGE SIDEBAR 
+# PAGE SIDEBAR
 st.sidebar.markdown("### ⚙️ View Controls")
 st.sidebar.markdown(
     "- Use **IP Lookup** for single host enrichment\n"
@@ -112,7 +112,8 @@ st.sidebar.markdown(
     "- **Geo Heatmap** reveals global distribution"
 )
 
-# CACHED HELPERS 
+
+# CACHED HELPERS
 @st.cache_data(show_spinner=True, ttl=60 * 30)
 def load_feodo():
     """Fetch & cache Feodo Tracker blocklist."""
@@ -126,6 +127,7 @@ def geocode_feodo(limit: int = 200) -> pd.DataFrame:
     if df.empty or "ip" not in df.columns:
         return pd.DataFrame()
     return geocode_ips(df["ip"], limit=limit)
+
 
 # MAIN INTRO CARD
 st.markdown(
@@ -147,7 +149,7 @@ st.markdown(
 
 tabs = st.tabs(["IP Lookup", "Threat Feeds", "Geo Heatmap"])
 
-# IP Lookup 
+# IP Lookup
 with tabs[0]:
     left, right = st.columns([1.2, 1])
 
@@ -202,7 +204,7 @@ with tabs[0]:
             st.info("Run a lookup to see geo information here.")
 
 
-# Threat Feeds 
+# Threat Feeds
 with tabs[1]:
     st.markdown(
         """
@@ -227,7 +229,9 @@ with tabs[1]:
         st.warning("No data returned from Feodo Tracker.")
     else:
         total = len(df_feodo)
-        countries = df_feodo["country"].nunique() if "country" in df_feodo.columns else 0
+        countries = (
+            df_feodo["country"].nunique() if "country" in df_feodo.columns else 0
+        )
 
         kpi1, kpi2 = st.columns(2)
         kpi1.metric("Suspicious IP entries", f"{total:,}")
